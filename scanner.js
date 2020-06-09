@@ -171,4 +171,4 @@ client.on('message', message => {
     //todo: add help
 });
 
-client.login("NzE5MjU0MTQwNDg3OTkxMzg3.Xt7MmQ.gt8kCCJ-QFvSFDp0Civv7SHnCMs");
+client.login(TOKEN);
