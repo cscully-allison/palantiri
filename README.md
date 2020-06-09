@@ -1,8 +1,6 @@
-# h0kkaido | broadcastify-feed-to-discord
+# Palantiri
 
-Listen to your favorite Broadcastify broadcasts with friends at Discord because Node.JS is awesome!
-
-> A simple top stream feed grabber.
+A soft fork of H0kkadio's broadcastify-feed-to-discord. Making significant adjustments to make the bot more generalizable and updated for Discord.js v12.
 
 ## Requirements
 
