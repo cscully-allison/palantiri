@@ -2,6 +2,9 @@
   "name": "Palantiri",
   "version": "1.0.0",
   "main": "scanner.js",
+  "engines": {
+    "node":"10.15.2"
+  },
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
