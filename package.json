@@ -6,8 +6,8 @@
     "node":"10.15.2"
   },
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node scanner.js",
+    "dev": "nodemon scanner.js"
   },
   "dependencies": {
     "@discordjs/opus": "^0.3.2",
