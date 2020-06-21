@@ -1,7 +1,7 @@
 // DEFAULT SETTING
 var defaultstream = {
-    name: "Reno and Sparks Police and Fire Live Audio Feed",
-    stream: "https://www.broadcastify.com/listen/feed/7364/web"
+    name: null,
+    stream: null
 }
 
 // REQUIRE WHATS NEEDE
@@ -28,17 +28,6 @@ var top = 2 // # OF FEED FROM TOP OF THE PAGE
 // START
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}`);
-
-    // client.channels.cache.find(c => c.name == textchannel).send('Police Scanner reboot sucsessful.\n`' + new Date() + '`');
-    // let channel = client.channels.cache.find(c => c.name == scannerchannel);
-    // client.user.setActivity(currentstream.name, {
-    //     type: "LISTENING",
-    //     url: currentstream.name
-    // })
-    // console.log('Init.');
-    // browsercheck(defaultstream.name, defaultstream.stream);
-    // // checktop();
-    // // setInterval(checktop, 1200000); // CHECK FREQUENCY
 });
 
 
@@ -96,17 +85,22 @@ function update(streamlink, streamname, channel) {
     }
     currentstream = changeto
     // defaultstream = currentstream
+    console.log(changeto)
     channel.leave()
-    channel.join()
-        .then(connection => {
-            console.log('Connected to ' + scannerchannel)
-            console.log("Current stream: " + currentstream.stream)
-            connection.play(currentstream.stream)
-            client.user.setActivity(currentstream.name, {
-                type: "LISTENING",
-                url: streamlink
+    
+    //timeout before reconnection
+    setTimeout(()=>{
+        channel.join()
+            .then(connection => {
+                console.log('Connected to ' + scannerchannel)
+                console.log("Current stream: " + currentstream.stream)
+                connection.play(currentstream.stream)
+                client.user.setActivity(currentstream.name, {
+                    type: "LISTENING",
+                    url: streamlink
+                })
             })
-        })
+        }, 2000)
 }
 
 
@@ -120,39 +114,31 @@ client.on('message', message => {
 
     console.log(message.guild.channels.cache.find(c => c.name == args[0]));
 
+    if(command == 'c' || command == "configure"){
+      //add later  
+    }
     //goto specific channel
-    if(command == 'm'){
-        message.guild.members.cache.find(u => u.user.username == 'Palantiri').user.setActivity(currentstream.name, {
-            type: "LISTENING",
-            url: currentstream.name
-        })
-
-        console.log("Move to " + args[0])
+    if(command == 'j' || command == 'join'){
         var channel = message.guild.channels.cache.find(c => c.name == args[0]);
-
         if(!channel){
             //throw error
+            message.channel.send("Voice channel \"" + args[0] + "\" cannot be found on this discord server. Please check your spelling and try again.")
             return;
         }
-
-        browsercheck(defaultstream.name, defaultstream.stream, channel);
-
+        if(defaultstream.stream != null){
+            message.channel.send("Joining \"" + args[0] + "\" and connecting to " + currentstream.stream);
+            browsercheck(defaultstream.name, defaultstream.stream, channel);
+        } else if (args[1]){
+            message.channel.send("Joining \"" + args[0] + "\" and connecting to " + args[1]);
+            browsercheck(defaultstream.name, args[1]+'/web', channel);
+        } else {
+            message.channel.send("Joining \"" + args[0] + "\". To connect to a broadcast, type: .ps cb <followed by the url of a broadcastify stream>.");
+            channel.join();
+        }
         scannerchannel = args[0];
     }
-
-    if(command == 's'){
-        message.guild.members.cache.find(u => u.user.username == 'Palantiri').user.setActivity(currentstream.name, {
-            type: "LISTENING",
-            url: currentstream.name
-        });
-
-        var channel = message.guild.channels.cache.find(c => c.name == scannerchannel);
-
-        browsercheck(defaultstream.name, defaultstream.stream, channel);
-    }
-
     //change to an arbitrary broadcastify channel
-    else if(command == 'cc'){
+    else if(command == 'cb' || command == 'change'){
         console.log("Change stream channel.")
         if(args.length < 1){
             message.channel.send("To change the channel please type: .ps cc <broadcastify-url>");
@@ -160,10 +146,7 @@ client.on('message', message => {
         else if (message.member.roles.cache.find(r => r.name == "Member")) {
             console.log('Changing channel')
             let channel = message.guild.channels.cache.find(c => c.name == scannerchannel);
-            message.channel.send("Changing channel to " + args[0])
-            // currentstream = "";
-            // channel.leave();
-            // channel.join();
+            message.channel.send("Changing stream feed to " + args[0])
             browsercheck("Unnamed Channel", args[0]+'/web', channel);
         }
     }
@@ -179,6 +162,10 @@ client.on('message', message => {
             channel.join();
             browsercheck(defaultstream.name, defaultstream.stream);
         }
+    }
+
+    else{
+        message.channel.send("You have entered an invalid command. Please type \".ps help\" to get a full list of commands.")
     }
 
     //todo: add help
